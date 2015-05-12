@@ -15,9 +15,6 @@
       "hook": "action:topic.move", "method": "topicMove"
     },
     {
-      "hook": "action:event.add", "method": "addEvent"
-    },
-    {
       "hook": "action:topic.delete", "method": "topicDeleteRestore"
     },
     {
@@ -25,6 +22,9 @@
     },
     {
       "hook": "action:topic.restore", "method": "topicDeleteRestore"
+    },
+    {
+      "hook": "action:event.add", "method": "addEvent"
     },
     {
       "hook": "static:app.load", "method": "init"

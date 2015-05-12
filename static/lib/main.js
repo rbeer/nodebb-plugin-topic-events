@@ -40,7 +40,7 @@ $('document').ready(function() {
             evtType = data.evtType,
             contentTpl = 'events:topic.' + evtType;
 
-        if (evtType === 'move') {
+        if (evtType === 'moved') {
           var fromUri = RELATIVE_PATH + '/category/' + data.fromSlug,
               toUri = RELATIVE_PATH + '/category/' + data.toSlug;
 
