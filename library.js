@@ -17,15 +17,31 @@ plugin.addEvent = function(tID, eventName, tstamp, evtData) {
   });
 };
 
-plugin.topicDeleteRestore = function(data) {
-  var tid = data.tid,
-      isDelete = data.isDelete,
-      uid = data.uid,
-      tstamp = Date.now();
 
-  user.getUserFields(uid, ['username', 'userslug', 'picture'],
+plugin.getEvents = function(tID, callback) {
+  var key = 'topic:' + tID + ':events';
+
+  db.getSetMembers(key, function(err, members) {
+    var events = [];
+    async.eachSeries(members, function(evtName, next) {
+      db.getObject(key + ':' + evtName, function(err, data) {
+        if (data !== null) {
+          events = events.concat(data);
+        }
+        next(err);
+      });
+    }, function(err) {
+      callback(err, events);
+    });
+  });
+};
+
+plugin.topicDeleteRestore = function(data) {
+  var tstamp = Date.now();
+
+  user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
-        var evtType = isDelete ? 'deleted' : 'restored',
+        var evtType = data.isDelete ? 'deleted' : 'restored',
             evtData = {
               evtType: evtType,
               tstamp: tstamp,
@@ -33,7 +49,7 @@ plugin.topicDeleteRestore = function(data) {
               username: userData.username,
               userslug: userData.userslug
             };
-        plugin.addEvent(tid, evtType, tstamp, evtData);
+        plugin.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
 
@@ -54,33 +70,12 @@ plugin.topicPurge = function(tID) {
   });
 };
 
-plugin.getEvents = function(tID, callback) {
-  var key = 'topic:' + tID + ':events';
-
-  db.getSetMembers(key, function(err, members) {
-    var events = [];
-    async.eachSeries(members, function(eventName, next) {
-      db.getObject(key + ':' + eventName, function(err, data) {
-        if (data !== null) {
-          events = events.concat(data);
-        }
-        next(err);
-      });
-    }, function(err) {
-      callback(err, events);
-    });
-  });
-};
-
 plugin.topicPin = function(data) {
-  var tid = data.tid,
-      isPinned = data.isPinned,
-      uid = data.uid,
-      tstamp = Date.now();
+  var tstamp = Date.now();
 
-  user.getUserFields(uid, ['username', 'userslug', 'picture'],
+  user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
-        var evtType = isPinned ? 'pinned' : 'unpinned',
+        var evtType = data.isPinned ? 'pinned' : 'unpinned',
             evtData = {
               evtType: evtType,
               tstamp: tstamp,
@@ -88,7 +83,7 @@ plugin.topicPin = function(data) {
               username: userData.username,
               userslug: userData.userslug
             };
-        plugin.addEvent(tid, evtType, tstamp, evtData);
+        plugin.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
 
@@ -120,17 +115,17 @@ plugin.topicMove = function(data) {
     categories: function(next) {
       categories.getCategoriesData([data.fromCid, data.toCid], next);
     }
-  }, function(err, data) {
+  }, function(err, cuData) {
     var evtData = {
       evtType: 'moved',
       tstamp: tstamp,
-      picture: data.user.picture,
-      username: data.user.username,
-      userslug: data.user.userslug,
-      fromName: data.categories[0].name,
-      fromSlug: data.categories[0].slug,
-      toName: data.categories[1].name,
-      toSlug: data.categories[1].slug
+      picture: cuData.user.picture,
+      username: cuData.user.username,
+      userslug: cuData.user.userslug,
+      fromName: cuData.categories[0].name,
+      fromSlug: cuData.categories[0].slug,
+      toName: cuData.categories[1].name,
+      toSlug: cuData.categories[1].slug
     };
 
     plugin.addEvent(data.tid, evtData.evtType, tstamp, evtData);
