@@ -1,0 +1,32 @@
+--- ../../src/threadTools.orig	2015-05-12 18:29:18.544674292 +0200
++++ ../../src/threadTools.js	2015-05-12 18:29:35.312674101 +0200
+@@ -37,19 +37,20 @@
+ 				}
+ 
+ 				ThreadTools[isDelete ? 'lock' : 'unlock'](tid, uid);
++
++        var data = {
++          tid: tid,
++          cid: topicData.cid,
++          isDelete: isDelete,
++          uid: uid
++        };
++
+ 				if (isDelete) {
+-					plugins.fireHook('action:topic.delete', tid);
++					plugins.fireHook('action:topic.delete', data);
+ 				} else {
+-					plugins.fireHook('action:topic.restore', topicData);
++					plugins.fireHook('action:topic.restore', data);
+ 				}
+ 
+-				var data = {
+-					tid: tid,
+-					cid: topicData.cid,
+-					isDelete: isDelete,
+-					uid: uid
+-				};
+-
+ 				callback(null, data);
+ 			});
+ 		});
