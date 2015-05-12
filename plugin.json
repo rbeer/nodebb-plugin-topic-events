@@ -15,13 +15,13 @@
       "hook": "action:topic.move", "method": "topicMove"
     },
     {
-      "hook": "action:topic.delete", "method": "topicDeleteRestore"
+      "hook": "action:topic.delete.event", "method": "topicDeleteRestore"
+    },
+    {
+      "hook": "action:topic.restore.event", "method": "topicDeleteRestore"
     },
     {
       "hook": "action:topic.purge", "method": "topicPurge"
-    },
-    {
-      "hook": "action:topic.restore", "method": "topicDeleteRestore"
     },
     {
       "hook": "action:event.add", "method": "addEvent"

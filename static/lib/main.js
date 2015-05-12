@@ -81,7 +81,7 @@ $('document').ready(function() {
           // event goes inbetween this and next post
           if (posts.item(pIdx).dataset.timestamp < data.tstamp &&
               nextTstamp > data.tstamp) {
-            
+
             var newEvtRow = $(content);
             newEvtRow.find('.timeago').timeago();
 
