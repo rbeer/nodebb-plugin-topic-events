@@ -1,0 +1,30 @@
+{
+  "name": "nodebb-plugin-events-topic",
+  "version": "0.1.0",
+  "description": "Topic Events plugin for NodeBB",
+  "main": "library.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Linux-statt-Windows/nodebb-plugin-events-topic"
+  },
+  "keywords": [
+    "nodebb",
+    "plugin",
+    "topic",
+    "events",
+    "thread",
+    "delete",
+    "restore",
+    "purge",
+    "pin",
+    "lock",
+    "move"
+  ],
+  "author": {
+    "name": "Raphael Beer",
+    "email": "raphaelbeer030@gmail.com"
+  },
+  "nbbpm": {
+    "compatibility": "0.6.1"
+  }
+}
