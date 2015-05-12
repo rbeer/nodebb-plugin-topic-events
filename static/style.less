@@ -1,0 +1,46 @@
+.topic .posts {
+	.events-topic {
+		img {
+			border-radius: 100%;
+			width: 19px;
+			height: 19px;
+			margin-left: -11px;
+		}
+
+		> span {
+			font-size: 85%;
+		}
+
+		height: 40px;
+		margin-left: 15px;
+		padding-top: 10px;
+
+		&.locked {
+			border-left: 4px solid @brand-success;
+		}
+
+		&.unlocked {
+			border-left: 4px solid @brand-info;
+		}
+
+		&.pinned {
+			border-left: 4px solid @brand-danger;
+		}
+
+		&.unpinned {
+			border-left: 4px solid @brand-warning;
+		}
+
+		&.move {
+			border-left: 8px solid @brand-primary;
+		}
+	}
+
+	.events-topic-before {
+		margin-bottom: 0px;
+	}
+
+	.events-topic-after {
+		margin-top: 0px;
+	}
+}
