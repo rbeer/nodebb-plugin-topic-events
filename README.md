@@ -9,3 +9,7 @@ PlugIn for NodeBB, showing inline topic events.
    2. `patch /full/path/to/nodebb/src/threadTools.js < threadTools.patch` 
 4. activate the plugin in the ACP
 5. profit
+
+<br>
+
+![](assets/screenshot.jpg?raw=true)
