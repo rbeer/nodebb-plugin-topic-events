@@ -1,6 +1,6 @@
 'use strict';
 
-var plugin = {},
+var TopicEvents = {},
     async = module.parent.require('async'),
     db = module.parent.require('./database'),
     user = module.parent.require('./user'),
@@ -9,7 +9,7 @@ var plugin = {},
     translator = module.parent.require('../public/src/translator');
 
 
-plugin.addEvent = function(tID, eventName, tstamp, evtData) {
+TopicEvents.addEvent = function(tID, eventName, tstamp, evtData) {
   var key = 'topic:' + tID + ':events';
 
   db.setAdd(key, eventName + ':' + tstamp, function(err) {
@@ -18,7 +18,7 @@ plugin.addEvent = function(tID, eventName, tstamp, evtData) {
 };
 
 
-plugin.getEvents = function(tID, callback) {
+TopicEvents.getEvents = function(tID, callback) {
   var key = 'topic:' + tID + ':events';
 
   db.getSetMembers(key, function(err, members) {
@@ -36,7 +36,7 @@ plugin.getEvents = function(tID, callback) {
   });
 };
 
-plugin.topicDeleteRestore = function(data) {
+TopicEvents.topicDeleteRestore = function(data) {
   var tstamp = Date.now();
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
@@ -49,12 +49,12 @@ plugin.topicDeleteRestore = function(data) {
               username: userData.username,
               userslug: userData.userslug
             };
-        plugin.addEvent(data.tid, evtType, tstamp, evtData);
+        TopicEvents.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
 
 
-plugin.topicPurge = function(tID) {
+TopicEvents.topicPurge = function(tID) {
   var key = 'topic:' + tID + ':events';
   db.getSetMembers(key, function(err, members) {
     async.eachSeries(members, function(eventName, next) {
@@ -70,7 +70,7 @@ plugin.topicPurge = function(tID) {
   });
 };
 
-plugin.topicPin = function(data) {
+TopicEvents.topicPin = function(data) {
   var tstamp = Date.now();
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
@@ -83,11 +83,11 @@ plugin.topicPin = function(data) {
               username: userData.username,
               userslug: userData.userslug
             };
-        plugin.addEvent(data.tid, evtType, tstamp, evtData);
+        TopicEvents.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
 
-plugin.topicLock = function(data) {
+TopicEvents.topicLock = function(data) {
   var tstamp = Date.now();
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
@@ -101,11 +101,11 @@ plugin.topicLock = function(data) {
               userslug: userData.userslug
             };
 
-        plugin.addEvent(data.tid, evtType, tstamp, evtData);
+        TopicEvents.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
 
-plugin.topicMove = function(data) {
+TopicEvents.topicMove = function(data) {
   var tstamp = Date.now();
 
   async.parallel({
@@ -128,11 +128,11 @@ plugin.topicMove = function(data) {
       toSlug: cuData.categories[1].slug
     };
 
-    plugin.addEvent(data.tid, evtData.evtType, tstamp, evtData);
+    TopicEvents.addEvent(data.tid, evtData.evtType, tstamp, evtData);
   });
 };
 
-plugin.init = function(data, callback) {
+TopicEvents.init = function(data, callback) {
   data.router.get('/api/events/tid/:tid', listTopicEvents);
   callback();
 };
@@ -140,9 +140,9 @@ plugin.init = function(data, callback) {
 function listTopicEvents(req, res, next) {
   var tid = req.params.tid || 0;
 
-  plugin.getEvents(tid, function(err, events) {
+  TopicEvents.getEvents(tid, function(err, events) {
     res.json(events);
   });
 }
 
-module.exports = plugin;
+module.exports = TopicEvents;
