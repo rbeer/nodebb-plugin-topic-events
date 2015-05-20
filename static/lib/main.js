@@ -16,7 +16,7 @@ $('document').ready(function() {
 
       var tid = data.tid || ajaxify.variables.get('topic_id');
       // get state
-      this.getState(tid, function(hidden) {
+      TopicEvents.getState(tid, function(hidden) {
         if (!hidden) {
           $.get(RELATIVE_PATH + '/api/topic-events/' + tid, function(events) {
             $.each(events, function(idx, data) {
