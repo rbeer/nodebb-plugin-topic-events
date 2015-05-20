@@ -1,7 +1,7 @@
 ﻿# nodebb-plugin-events-topic
 PlugIn for NodeBB, showing inline topic events.
 
-
+![](assets/screenshot.jpg?raw=true)
 
 ## Installation
 1. Go to your nodeBB installation:
