@@ -141,6 +141,27 @@ $('document').ready(function() {
         }
       });
     }
+    $('.toggle-events').on('click', function(evt) {
+      //TopicEvents.toggleTopicTool(tid[1]);
+
+      // topic tool DOM
+      var ttDOM = $('.toggle-events').children()[0];
+      var tid = ajaxify.variables.get('topic_id');
+      socket.emit('plugins.topicEvents.toggleState',
+                  {tid: tid},
+                  function(err, backData) {
+                    if (err) {
+                      return console.log(err);
+                    } else if (backData.isHidden) {
+                      TopicEvents.setEventTool(backData.isHidden);
+                      TopicEvents.clearTopicEvents();
+                    } else {
+                      TopicEvents.setEventTool(backData.isHidden);
+                      TopicEvents.getTopicEvents({});
+                    }
+                  });
+      evt.preventDefault();
+    });
   });
   $(window).on('action:posts.loaded', TopicEvents.getTopicEvents);
 
@@ -151,26 +172,4 @@ $('document').ready(function() {
   socket.on('event:topic_deleted', TopicEvents.getTopicEvents);
   socket.on('event:topic_restored', TopicEvents.getTopicEvents);
   socket.on('event:topic_moved', TopicEvents.getTopicEvents);
-
-  $('.toggle-events').on('click', function(evt) {
-    //TopicEvents.toggleTopicTool(tid[1]);
-    
-    // topic tool DOM
-    var ttDOM = $('.toggle-events').children()[0];
-    var tid = ajaxify.variables.get('topic_id');
-    socket.emit('plugins.topicEvents.toggleState',
-                {tid: tid},
-                function(err, backData) {
-                  if (err) {
-                    return console.log(err);
-                  } else if (backData.isHidden) {
-                    TopicEvents.setEventTool(backData.isHidden);
-                    TopicEvents.clearTopicEvents();
-                  } else {
-                    TopicEvents.setEventTool(backData.isHidden);
-                    TopicEvents.getTopicEvents({});
-                  }
-                });
-    evt.preventDefault();
-  });
 });
