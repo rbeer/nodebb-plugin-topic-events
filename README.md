@@ -1,4 +1,4 @@
-﻿# nodebb-plugin-events-topic
+# nodebb-plugin-events-topic
 PlugIn for NodeBB, showing inline topic events.
 
 ![](assets/screenshot.jpg?raw=true)
@@ -10,15 +10,22 @@ PlugIn for NodeBB, showing inline topic events.
 
 2. Clone the plugin into ./node_modules/ folder:
 
-    `$ git clone https://github.com/Linux-statt-Windows/nodebb-plugin-events-topic.git ./node_modules/nodebb-plugin-events-topic`
-2. Install module:
+    ```bash
+git clone https://github.com/Linux-statt-Windows/nodebb-plugin-events-topic.git \
+./node_modules/nodebb-plugin-events-topic
+```
 
-    `$ npm install`
-3. Apply the patch:
-   1. `$ cd ./node_modules/nodebb-plugin-events-topic`
-   2. `$ patch < threadTools.patch` 
-4. Activate the plugin in the ACP.
-5. Go nuts! :D
+3. Install module:
+
+    `npm install`
+
+4. Apply the patch:
+   1. `cd ./node_modules/nodebb-plugin-events-topic`
+   2. `patch < threadTools.patch`
+
+5. Activate the plugin in the ACP.
+
+6. Go nuts! :D
 
 ## Features
 ###Captured Events
