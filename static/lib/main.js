@@ -52,9 +52,9 @@ $('document').ready(function() {
     },
 
     clearTopicEvents: function() {
-      var posts = document.getElementsByClassName('events-topic-block');
-      for (var i = posts.length - 1; i >= 0; i--) {
-        posts[i].remove();
+      var eventBlocks = document.getElementsByClassName('events-topic-block');
+      for (var i = eventBlocks.length - 1; i >= 0; i--) {
+        eventBlocks[i].parentNode.removeChild(eventBlocks[i]);
       }
     },
 
