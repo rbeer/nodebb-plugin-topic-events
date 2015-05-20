@@ -5,30 +5,15 @@
   "url": "https://github.com/Linux-statt-Windows/nodebb-plugin-events",
   "library": "./library.js",
   "hooks": [
-    {
-      "hook": "action:topic.pin", "method": "topicPin"
-    },
-    {
-      "hook": "action:topic.lock", "method": "topicLock"
-    },
-    {
-      "hook": "action:topic.move", "method": "topicMove"
-    },
-    {
-      "hook": "action:topic.delete.event", "method": "topicDeleteRestore"
-    },
-    {
-      "hook": "action:topic.restore.event", "method": "topicDeleteRestore"
-    },
-    {
-      "hook": "action:topic.purge", "method": "topicPurge"
-    },
-    {
-      "hook": "action:event.add", "method": "addEvent"
-    },
-    {
-      "hook": "static:app.load", "method": "init"
-    }
+    { "hook": "action:topic.pin", "method": "topicPin" },
+    { "hook": "action:topic.lock", "method": "topicLock" },
+    { "hook": "action:topic.move", "method": "topicMove" },
+    { "hook": "action:topic.delete.event", "method": "topicDeleteRestore" },
+    { "hook": "action:topic.restore.event", "method": "topicDeleteRestore" },
+    { "hook": "action:topic.purge", "method": "topicPurge" },
+    { "hook": "action:event.add", "method": "addEvent" },
+    { "hook": "static:app.load", "method": "init" },
+    { "hook": "filter:topic.thread_tools", "method": "addTopicTool" }
   ],
   "staticDirs": {
     "static": "./static"

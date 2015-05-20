@@ -6,7 +6,9 @@ var TopicEvents = {},
     user = module.parent.require('./user'),
     plugins = module.parent.require('./plugins'),
     categories = module.parent.require('./categories'),
-    translator = module.parent.require('../public/src/translator');
+    translator = module.parent.require('../public/src/translator'),
+    PluginSocket = require.main.require('./src/socket.io/plugins'),
+    ThreadTools = module.parent.require('./threadTools');
 
 
 TopicEvents.addEvent = function(tID, eventName, tstamp, evtData) {
@@ -18,7 +20,7 @@ TopicEvents.addEvent = function(tID, eventName, tstamp, evtData) {
 };
 
 
-TopicEvents.getEvents = function(tID, callback) {
+TopicEvents.getEvents = function(tID, cb) {
   var key = 'topic:' + tID + ':events';
 
   db.getSetMembers(key, function(err, members) {
@@ -31,7 +33,7 @@ TopicEvents.getEvents = function(tID, callback) {
         next(err);
       });
     }, function(err) {
-      callback(err, events);
+      cb(err, events);
     });
   });
 };
@@ -132,9 +134,55 @@ TopicEvents.topicMove = function(data) {
   });
 };
 
-TopicEvents.init = function(data, callback) {
-  data.router.get('/api/events/tid/:tid', listTopicEvents);
-  callback();
+TopicEvents.addTopicTool = function(tTools, cb) {
+
+  var title = translator.compile('events:ttool.hide'),
+      ico = 'fa-toggle-off';
+  tTools.push({
+    'title': title,
+    'class': 'toggle-events',
+    'icon': ico
+  });
+
+  cb(null, tTools);
+};
+
+TopicEvents.getState = function(req, res, next) {
+  if (!req.params.tid) {
+    res.json('no topic_id');
+    return;
+  }
+  var key = 'topic:' + req.params.tid + ':hideevents';
+  db.exists(key, function(err, itExists) {
+    if (itExists) {
+      res.json({ isHidden: true });
+    } else {
+      res.json({ isHidden: false });
+    }
+  });
+};
+
+TopicEvents.init = function(data, cb) {
+  data.router.get('/api/topic-events/:tid', listTopicEvents);
+  data.router.get('/api/topic-events/:tid/state', TopicEvents.getState);
+  PluginSocket.topicEvents = {};
+  PluginSocket.topicEvents.toggleState = function(socket, data, cb) {
+    if (!data.tid) {
+      return cb('No topic_id');
+    }
+    var key = 'topic:' + data.tid + ':hideevents';
+    db.exists(key, function(err, itExists) {
+      if (itExists) {
+        db.delete(key, void 0);
+        return cb(null, { isHidden: false });
+      } else {
+        db.set(key, '1', void 0);
+        return cb(null, { isHidden: true });
+      }
+    });
+  };
+
+  cb();
 };
 
 function listTopicEvents(req, res, next) {
