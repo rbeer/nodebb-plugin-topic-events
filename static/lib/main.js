@@ -109,23 +109,25 @@ $('document').ready(function() {
     },
 
     setEventTool: function(hidden) {
-      var ttDOM = $('.toggle-events').children()[0];
-      if (hidden) {
-        ttDOM.classList.remove('fa-toggle-off');
-        ttDOM.classList.remove('te-hide');
-        ttDOM.classList.add('fa-toggle-on');
-        ttDOM.classList.add('te-show');
-        ttDOM.parentElement.dataset.teHidden = '1';
-        ttDOM.nextSibling.textContent = ' Show Events';
-        // /\ = translator.compile('events:ttool.show'); ???
-      } else {
-        ttDOM.classList.remove('fa-toggle-on');
-        ttDOM.classList.remove('te-show');
-        ttDOM.classList.add('fa-toggle-off');
-        ttDOM.classList.add('te-hide');
-        ttDOM.parentElement.dataset.teHidden = '0';
-        ttDOM.nextSibling.textContent = ' Hide Events';
-        // /\ = translator.compile('events:ttool.hide'); ???
+      var ttDOM = $('.toggle-events').children();
+      for (var i = ttDOM.length - 1; i >= 0; i--) {
+        if (hidden) {
+          ttDOM[i].classList.remove('fa-toggle-off');
+          ttDOM[i].classList.remove('te-hide');
+          ttDOM[i].classList.add('fa-toggle-on');
+          ttDOM[i].classList.add('te-show');
+          ttDOM[i].parentElement.dataset.teHidden = '1';
+          ttDOM[i].nextSibling.textContent = ' Show Events';
+          // /\ = translator.compile('events:ttool.show'); ???
+        } else {
+          ttDOM[i].classList.remove('fa-toggle-on');
+          ttDOM[i].classList.remove('te-show');
+          ttDOM[i].classList.add('fa-toggle-off');
+          ttDOM[i].classList.add('te-hide');
+          ttDOM[i].parentElement.dataset.teHidden = '0';
+          ttDOM[i].nextSibling.textContent = ' Hide Events';
+          // /\ = translator.compile('events:ttool.hide'); ???
+        }
       }
     }
   };
