@@ -44,7 +44,7 @@ $('document').ready(function() {
                                                   data.username, tstamp);
               }
               data.class = evtType;
-              TopicEvents.addTopicEvent(data, idx);
+              TopicEvents.addTopicEvent(data);
             });
           });
         }
@@ -58,7 +58,7 @@ $('document').ready(function() {
       }
     },
 
-    addTopicEvent: function(data, idx) {
+    addTopicEvent: function(data) {
       templates.parse('events/topic', data, function(tpl) {
         translator.translate(tpl, function(content) {
 
