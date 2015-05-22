@@ -112,15 +112,17 @@ $('document').ready(function() {
       var ttDOM = $('.toggle-events').children()[0];
       if (hidden) {
         ttDOM.classList.remove('fa-toggle-off');
+        ttDOM.classList.remove('te-hide');
         ttDOM.classList.add('fa-toggle-on');
-        ttDOM.style.color = 'rgb(75, 216, 101)';
+        ttDOM.classList.add('te-show');
         ttDOM.parentElement.dataset.teHidden = '1';
         ttDOM.nextSibling.textContent = ' Show Events';
         // /\ = translator.compile('events:ttool.show'); ???
       } else {
         ttDOM.classList.remove('fa-toggle-on');
+        ttDOM.classList.remove('te-show');
         ttDOM.classList.add('fa-toggle-off');
-        ttDOM.style.color = '';
+        ttDOM.classList.add('te-hide');
         ttDOM.parentElement.dataset.teHidden = '0';
         ttDOM.nextSibling.textContent = ' Hide Events';
         // /\ = translator.compile('events:ttool.hide'); ???
