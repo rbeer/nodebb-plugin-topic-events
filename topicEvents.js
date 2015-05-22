@@ -136,7 +136,7 @@ TopicEvents.topicMove = function(data) {
 
 TopicEvents.addTopicTool = function(tTools, cb) {
 
-  var title = translator.compile('events:ttool.hide'),
+  var title = translator.compile('topicEvents:ttool.hide'),
       ico = 'fa-toggle-off';
   tTools.push({
     'title': title,

@@ -21,7 +21,7 @@ $('document').ready(function() {
         if (!hidden) {
           $.get(RELATIVE_PATH + '/api/topic-events/' + tid, function(events) {
             $.each(events, function(idx, data) {
-              if ($('.events-topic[data-timestamp="' +
+              if ($('.topic-events[data-timestamp="' +
                   data.tstamp + '"]').length ||
                   data.evtType === void 0) {
                 return true;
@@ -30,7 +30,7 @@ $('document').ready(function() {
               var tstamp = utils.toISOString(data.tstamp),
                   userUri = RELATIVE_PATH + '/user/' + data.userslug,
                   evtType = data.evtType,
-                  contentTpl = 'events:topic.' + evtType;
+                  contentTpl = 'topicEvents:topic.' + evtType;
 
               if (evtType === 'moved') {
                 var fromUri = RELATIVE_PATH + '/category/' + data.fromSlug,
@@ -53,14 +53,14 @@ $('document').ready(function() {
     },
 
     clearTopicEvents: function() {
-      var eventBlocks = document.getElementsByClassName('events-topic-block');
+      var eventBlocks = document.getElementsByClassName('topic-events-block');
       for (var i = eventBlocks.length - 1; i >= 0; i--) {
         eventBlocks[i].parentNode.removeChild(eventBlocks[i]);
       }
     },
 
     addTopicEvent: function(data) {
-      templates.parse('events/topic', data, function(tpl) {
+      templates.parse('topicEvents/event', data, function(tpl) {
         translator.translate(tpl, function(content) {
 
           var posts = document.getElementsByClassName('post-row'),
@@ -82,7 +82,7 @@ $('document').ready(function() {
 
               // already events in here?
               var possEvents = posts.item(pIdx).nextElementSibling;
-              if (possEvents && possEvents.className === 'events-topic-block') {
+              if (possEvents && possEvents.className === 'topic-events-block') {
                 // loop through present events and place new one according
                 // to timestamps; necessary, since templates.parse is async.
                 for (var cIdx = possEvents.children.length - 1; cIdx >= 0;
@@ -99,7 +99,7 @@ $('document').ready(function() {
                 }
               } else {
                 var block = document.createElement('div');
-                block.className = 'events-topic-block';
+                block.className = 'topic-events-block';
                 block.appendChild(newEvtRow[0]);
                 posts.item(pIdx).insertAdjacentElement('afterend', block);
               }
@@ -114,23 +114,25 @@ $('document').ready(function() {
       for (var i = ttDOM.length - 1; i >= 0; i--) {
         var domTarget = ttDOM[i];
         if (hidden) {
-          ttDOM[i].classList.remove('fa-toggle-off');
-          ttDOM[i].classList.remove('te-hide');
-          ttDOM[i].classList.add('fa-toggle-on');
-          ttDOM[i].classList.add('te-show');
-          ttDOM[i].parentElement.dataset.teHidden = '1';
-          translator.translate('[[events:ttool.show]]', function(translated) {
-            domTarget.nextSibling.textContent = translated;
-          });
+          domTarget.classList.remove('fa-toggle-off');
+          domTarget.classList.remove('te-hide');
+          domTarget.classList.add('fa-toggle-on');
+          domTarget.classList.add('te-show');
+          domTarget.parentElement.dataset.teHidden = '1';
+          translator.translate('[[topicEvents:ttool.show]]',
+              function(translated) {
+                domTarget.nextSibling.textContent = translated;
+              });
         } else {
-          ttDOM[i].classList.remove('fa-toggle-on');
-          ttDOM[i].classList.remove('te-show');
-          ttDOM[i].classList.add('fa-toggle-off');
-          ttDOM[i].classList.add('te-hide');
-          ttDOM[i].parentElement.dataset.teHidden = '0';
-          translator.translate('[[events:ttool.hide]]', function(translated) {
-            domTarget.nextSibling.textContent = translated;
-          });
+          domTarget.classList.remove('fa-toggle-on');
+          domTarget.classList.remove('te-show');
+          domTarget.classList.add('fa-toggle-off');
+          domTarget.classList.add('te-hide');
+          domTarget.parentElement.dataset.teHidden = '0';
+          translator.translate('[[topicEvents:ttool.hide]]',
+              function(translated) {
+                domTarget.nextSibling.textContent = translated;
+              });
         }
       }
     }
