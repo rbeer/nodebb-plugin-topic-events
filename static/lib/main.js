@@ -1,9 +1,26 @@
 'use strict';
 /*global socket, ajaxify, RELATIVE_PATH, utils, translator, templates*/
 
+
 $('document').ready(function() {
 
   var TopicEvents = {
+
+    ttoolText: {
+      data: null,
+      init: function() {
+        $.get(RELATIVE_PATH + '/language/' + config.userLang + '/events.json',
+              function(langData) {
+                this.data = langData;
+              }.bind(TopicEvents.ttoolText));
+      },
+      hide: function() {
+        return (this.data) ? ' ' + this.data['ttool.hide'] : ' No data :(';
+      },
+      show: function() {
+        return (this.data) ? ' ' + this.data['ttool.show'] : ' No data :(';
+      }
+    },
 
     getState: function(tid, cb) {
       $.get(RELATIVE_PATH + '/api/topic-events/' + tid + '/state',
@@ -117,20 +134,21 @@ $('document').ready(function() {
           ttDOM[i].classList.add('fa-toggle-on');
           ttDOM[i].classList.add('te-show');
           ttDOM[i].parentElement.dataset.teHidden = '1';
-          ttDOM[i].nextSibling.textContent = ' Show Events';
-          // /\ = translator.compile('events:ttool.show'); ???
+          ttDOM[i].nextSibling.textContent = TopicEvents.ttoolText.show();
         } else {
           ttDOM[i].classList.remove('fa-toggle-on');
           ttDOM[i].classList.remove('te-show');
           ttDOM[i].classList.add('fa-toggle-off');
           ttDOM[i].classList.add('te-hide');
           ttDOM[i].parentElement.dataset.teHidden = '0';
-          ttDOM[i].nextSibling.textContent = ' Hide Events';
-          // /\ = translator.compile('events:ttool.hide'); ???
+          ttDOM[i].nextSibling.textContent = TopicEvents.ttoolText.hide();
         }
       }
     }
   };
+
+  // load TopicTool translations
+  TopicEvents.ttoolText.init();
 
   $(window).on('action:ajaxify.end', function(evt, data) {
 
