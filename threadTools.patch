@@ -1,32 +1,29 @@
---- ../../src/threadTools.orig	2015-05-12 18:29:18.544674292 +0200
-+++ ../../src/threadTools.js	2015-05-12 21:53:34.328535040 +0200
-@@ -37,19 +37,22 @@
+--- ../../src/threadTools.orig	2015-05-29 21:04:29.113666800 +0200
++++ ../../src/threadTools.js	2015-05-29 21:04:40.965667122 +0200
+@@ -38,12 +38,6 @@
  				}
+ 				topicData.deleted = isDelete ? 1 : 0;
  
- 				ThreadTools[isDelete ? 'lock' : 'unlock'](tid, uid);
-+
-+        var data = {
-+          tid: tid,
-+          cid: topicData.cid,
-+          isDelete: isDelete,
-+          uid: uid
-+        };
-+
- 				if (isDelete) {
- 					plugins.fireHook('action:topic.delete', tid);
-+					plugins.fireHook('action:topic.delete.event', data);
- 				} else {
- 					plugins.fireHook('action:topic.restore', topicData);
-+					plugins.fireHook('action:topic.restore.event', data);
- 				}
- 
--				var data = {
--					tid: tid,
--					cid: topicData.cid,
--					isDelete: isDelete,
--					uid: uid
--				};
+-				if (isDelete) {
+-					plugins.fireHook('action:topic.delete', tid);
+-				} else {
+-					plugins.fireHook('action:topic.restore', topicData);
+-				}
 -
+ 				var data = {
+ 					tid: tid,
+ 					cid: topicData.cid,
+@@ -51,6 +45,13 @@
+ 					uid: uid
+ 				};
+ 
++				if (isDelete) {
++					plugins.fireHook('action:topic.delete', data);
++				} else {
++					plugins.fireHook('action:topic.restore', topicData);
++				}
++
++
  				callback(null, data);
  			});
  		});

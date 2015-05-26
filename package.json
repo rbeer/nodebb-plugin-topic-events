@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-topic-events",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Topic Events plugin for NodeBB",
   "main": "topicEvents.js",
   "repository": {
@@ -25,6 +25,6 @@
     "email": "raphaelbeer030@gmail.com"
   },
   "nbbpm": {
-    "compatibility": "0.6.1"
+    "compatibility": "0.7.0"
   }
 }

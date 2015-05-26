@@ -1,15 +1,15 @@
 'use strict';
 
-var TopicEvents = {},
-    async = module.parent.require('async'),
-    db = module.parent.require('./database'),
-    user = module.parent.require('./user'),
-    plugins = module.parent.require('./plugins'),
-    categories = module.parent.require('./categories'),
-    translator = module.parent.require('../public/src/translator'),
-    PluginSocket = require.main.require('./src/socket.io/plugins'),
-    ThreadTools = module.parent.require('./threadTools');
-
+var TopicEvents = {};
+var async = module.parent.require('async');
+var db = module.parent.require('./database');
+var user = module.parent.require('./user');
+var plugins = module.parent.require('./plugins');
+var categories = module.parent.require('./categories');
+var translator = module.parent.require('../public/src/modules/translator');
+var PluginSocket = require.main.require('./src/socket.io/plugins');
+var ThreadTools = module.parent.require('./threadTools');
+var user = require.main.require('./src/user');
 
 TopicEvents.addEvent = function(tID, eventName, tstamp, evtData) {
   var key = 'topic:' + tID + ':events';
@@ -138,7 +138,7 @@ TopicEvents.addTopicTool = function(tTools, cb) {
 
   var title = translator.compile('topicEvents:ttool.hide'),
       ico = 'fa-toggle-off';
-  tTools.push({
+  tTools.tools.push({
     'title': title,
     'class': 'toggle-events',
     'icon': ico
