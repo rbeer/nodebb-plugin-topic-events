@@ -43,7 +43,7 @@ TopicEvents.topicDeleteRestore = function(data) {
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
-        var evtType = data.isDelete ? 'deleted' : 'restored',
+        var evtType = (data.deleted === 1) ? 'deleted' : 'restored',
             evtData = {
               evtType: evtType,
               tstamp: tstamp,
