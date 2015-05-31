@@ -48,35 +48,37 @@ require(['translator'], function(translator) {
       TopicEvents.getState(tid, function(hidden) {
         if (!hidden) {
           $.get(RELATIVE_PATH + '/api/topic-events/' + tid, function(events) {
-            $.each(events, function(idx, data) {
-              if ($('.topic-events[data-timestamp="' +
-                  data.tstamp + '"]').length ||
-                  data.evtType === void 0) {
-                return true;
-              }
-
-              var tstamp = utils.toISOString(data.tstamp),
-                  userUri = RELATIVE_PATH + '/user/' + data.userslug,
-                  evtType = data.evtType,
-                  contentTpl = 'topicEvents:topic.' + evtType;
-
-              if (evtType === 'moved') {
-                var fromUri = RELATIVE_PATH + '/category/' + data.fromSlug;
-                var toUri = RELATIVE_PATH + '/category/' + data.toSlug;
-                data.content = translator.compile(contentTpl, userUri,
-                                                  data.username, fromUri,
-                                                  data.fromName, toUri,
-                                                  data.toName, tstamp);
-              } else {
-                data.content = translator.compile(contentTpl, userUri,
-                                                  data.username, tstamp);
-              }
-              data.class = evtType;
-              TopicEvents.addTopicEvent(data);
-            });
+            events.forEach(TopicEvents.prepareTopicEvent);
           });
         }
       });
+    },
+
+    prepareTopicEvent: function(data) {
+      var selector = 'li[component="topic/event"][data-timestamp="' +
+                     data.tstamp + '"]';
+      if (document.querySelector(selector) != null || data.evtType === void 0) {
+        return true;
+      }
+
+      var tstamp = utils.toISOString(data.tstamp),
+          userUri = RELATIVE_PATH + '/user/' + data.userslug,
+          evtType = data.evtType,
+          contentTpl = 'topicEvents:topic.' + evtType;
+
+      if (evtType === 'moved') {
+        var fromUri = RELATIVE_PATH + '/category/' + data.fromSlug;
+        var toUri = RELATIVE_PATH + '/category/' + data.toSlug;
+        data.content = translator.compile(contentTpl, userUri,
+                                          data.username, fromUri,
+                                          data.fromName, toUri,
+                                          data.toName, tstamp);
+      } else {
+        data.content = translator.compile(contentTpl, userUri,
+                                          data.username, tstamp);
+      }
+      data.class = evtType;
+      TopicEvents.addTopicEvent(data);
     },
 
     clearTopicEvents: function() {
@@ -92,6 +94,8 @@ require(['translator'], function(translator) {
 
           var posts = document.querySelectorAll('li[component=post]');
           var nextTstamp = 0;
+          var newEvtRow = $(content);
+          newEvtRow.find('.timeago').timeago();
 
           for (var pIdx = 0; pIdx <= posts.length - 1; pIdx++) {
             if (pIdx != posts.length - 1) {
@@ -100,36 +104,30 @@ require(['translator'], function(translator) {
               nextTstamp = data.tstamp + 1;
             }
 
-            // event goes inbetween this and next post
             if (posts.item(pIdx).dataset.timestamp < data.tstamp &&
                 nextTstamp > data.tstamp) {
 
-              var newEvtRow = $(content);
-              newEvtRow.find('.timeago').timeago();
+              var post = posts.item(pIdx);
+              var possEvent = (post.nextElementSibling != null) ?
+                                post.nextElementSibling : post;
 
-              // already events in here?
-              var possEvents = posts.item(pIdx).nextElementSibling;
-              if (possEvents && possEvents.className === 'topic-events-block') {
-                // loop through present events and place new one according
-                // to timestamps; necessary, since templates.parse is async.
-                for (var cIdx = possEvents.children.length - 1; cIdx >= 0;
-                    cIdx--) {
-                  if (possEvents.children[cIdx].dataset.timestamp <
-                      data.tstamp) {
-                    possEvents.children[cIdx].insertAdjacentElement('afterend',
-                        newEvtRow[0]);
-                    break;
-                  } else if (cIdx === 0) {
-                    possEvents.children[cIdx].
-                        insertAdjacentElement('beforebegin', newEvtRow[0]);
-                  }
+              while (possEvent.getAttribute('component') === 'topic/event') {
+
+                if (possEvent.dataset.timestamp > data.tstamp) {
+                  possEvent.insertAdjacentElement('beforebegin', newEvtRow[0]);
+                  return;
                 }
-              } else {
-                var block = document.createElement('div');
-                block.className = 'topic-events-block';
-                block.appendChild(newEvtRow[0]);
-                posts.item(pIdx).insertAdjacentElement('afterend', block);
+
+                // iterate
+                if (possEvent.nextElementSibling != null) {
+                  possEvent = possEvent.nextElementSibling;
+                } else {
+                  possEvent.insertAdjacentElement('afterend', newEvtRow[0]);
+                  return;
+                }
               }
+              post.insertAdjacentElement('afterend', newEvtRow[0]);
+              return;
             }
           }
         });
@@ -145,7 +143,6 @@ require(['translator'], function(translator) {
           domTarget.classList.remove('te-hide');
           domTarget.classList.add('fa-toggle-on');
           domTarget.classList.add('te-show');
-          domTarget.parentElement.dataset.teHidden = '1';
           translator.translate('[[topicEvents:ttool.show]]',
               function(translated) {
                 domTarget.nextSibling.textContent = translated;
@@ -155,7 +152,6 @@ require(['translator'], function(translator) {
           domTarget.classList.remove('te-show');
           domTarget.classList.add('fa-toggle-off');
           domTarget.classList.add('te-hide');
-          domTarget.parentElement.dataset.teHidden = '0';
           translator.translate('[[topicEvents:ttool.hide]]',
               function(translated) {
                 domTarget.nextSibling.textContent = translated;
@@ -167,16 +163,18 @@ require(['translator'], function(translator) {
 
   $(window).on('action:topic.loaded', TopicEvents.init);
   $(window).on('action:posts.loaded', function(evt, data) {
-    // new posts are delivered alone && have a CategoryID
+    console.log('postsloaded');
+    /*// new posts are delivered alone && have a CategoryID
     if (data.posts.length === 1 && data.posts[0].cid) {
-      var newPost = document.
-          querySelector('li[data-timestamp="' + post.timestamp + '"]');
+      var selector = 'li[component="post"][data-timestamp="' +
+                     post.timestamp + '"]';
+      var newPost = document.querySelector(selector);
       if (newPost.nextSibling.className === 'topic-events-block') {
         var tail = newPost.nextSibling;
         tail.parentElement.removeChild(tail);
         newPost.insertAdjacentElement('beforebegin', tail);
       }
-    }
+    }*/
   });
 
   socket.on('event:topic_pinned', TopicEvents.getTopicEvents);

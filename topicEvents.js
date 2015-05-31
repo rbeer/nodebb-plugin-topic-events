@@ -154,10 +154,10 @@ TopicEvents.getState = function(req, res, next) {
   }
   var key = 'topic:' + req.params.tid + ':hideevents';
   db.exists(key, function(err, itExists) {
-    if (itExists) {
-      res.json({ isHidden: true });
-    } else {
+    if (!itExists) {
       res.json({ isHidden: false });
+    } else {
+      res.json({ isHidden: true });
     }
   });
 };
