@@ -166,6 +166,18 @@ require(['translator'], function(translator) {
   };
 
   $(window).on('action:topic.loaded', TopicEvents.init);
+  $(window).on('action:posts.loaded', function(evt, data) {
+    // new posts are delivered alone && have a CategoryID
+    if (data.posts.length === 1 && data.posts[0].cid) {
+      var newPost = document.
+          querySelector('li[data-timestamp="' + post.timestamp + '"]');
+      if (newPost.nextSibling.className === 'topic-events-block') {
+        var tail = newPost.nextSibling;
+        tail.parentElement.removeChild(tail);
+        newPost.insertAdjacentElement('beforebegin', tail);
+      }
+    }
+  });
 
   socket.on('event:topic_pinned', TopicEvents.getTopicEvents);
   socket.on('event:topic_unpinned', TopicEvents.getTopicEvents);
