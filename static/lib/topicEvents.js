@@ -10,6 +10,12 @@ require(['translator'], function(translator) {
     _tailEvents: [],
 
     init: function() {
+
+      // first things first, FIREFOX! >:@
+      if (Element.prototype.insertAdjacentElement === void 0) {
+        Element.prototype.insertAdjacentElement = thxFireFox;
+      }
+
       var tid = ajaxify.variables.get('topic_id');
       var firstId = document.querySelectorAll('[component="post"]').
                     item(1).dataset.index;
@@ -41,6 +47,10 @@ require(['translator'], function(translator) {
                     });
         evt.preventDefault();
       });
+    },
+
+    thxFireFox: function(pos, element) {
+      this.insertAdjacentHTML(pos, element.outerHTML);
     },
 
     getState: function(tid, cb) {
@@ -199,15 +209,24 @@ require(['translator'], function(translator) {
 
   $(window).on('action:topic.loaded', TopicEvents.init);
   $(window).on('action:posts.loaded', function(evt, data) {
-    console.log('postsloaded');
-    //new posts are delivered alone && have a CategoryID
-    if (data.posts.length === 1 && data.posts[0].cid) { }
+    // new posts are delivered alone && have a CategoryID
+    // assume there are no events after a post, that just
+    // arrived, so just push the post to the very end
+    if (data.posts.length === 1 && data.posts[0].cid) {
+      var pqs = '[component="post"][data-index="' +
+                data.posts[data.posts.length - 1].index + '"]';
+      var topic = document.querySelector('[component="topic"]');
+      var post = document.querySelector(pqs);
+      topic.removeChild(post);
+      topic.insertAdjacentElement('beforeend', post);
+      return;
+    }
 
     var posts = [document.querySelector('[component="post"][data-index="0"]')];
     for (var i = 0; i <= data.posts.length - 1; i++) {
-      var qs = '[component="post"][data-index="' +
-               data.posts[i].index + '"]';
-      posts.push(document.querySelector(qs));
+      var pqs = '[component="post"][data-index="' +
+                data.posts[i].index + '"]';
+      posts.push(document.querySelector(pqs));
     }
 
     var newLastId = data.posts[data.posts.length - 1].index;
@@ -215,14 +234,12 @@ require(['translator'], function(translator) {
       if (TopicEvents._headEvents.length === 0) {
         return;
       }
-      console.log('going UP');
       var iterEvents = TopicEvents._headEvents.slice(0);
       var moveEvents = TopicEvents._headEvents;
     } else {
       if (TopicEvents._tailEvents.length === 0) {
         return;
       }
-      console.log('going DOWN');
       var iterEvents = TopicEvents._tailEvents.slice(0);
       var moveEvents = TopicEvents._tailEvents;
     }
