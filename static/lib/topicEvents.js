@@ -1,10 +1,10 @@
 'use strict';
-/*global socket, ajaxify, RELATIVE_PATH, utils, app, templates*/
+/*global socket, ajaxify, RELATIVE_PATH, utils, templates*/
 
 (function(window) {
   require(['translator'], function(translator) {
 
-    window.TopicEvents = {
+    var TopicEvents = window.TopicEvents = {
 
       _firstAnswerId: 0,
       _headEvents: [],
@@ -19,8 +19,8 @@
         }
 
         var tid = ajaxify.variables.get('topic_id');
-        var firstId = document.querySelectorAll('[component="post"]').
-                      item(1).dataset.index;
+        var firstId = document.querySelectorAll('[component="post"]')
+                      .item(1).dataset.index;
         TopicEvents._firstAnswerId = Number.parseInt(firstId);
 
         TopicEvents.getState(tid, function(hidden) {
@@ -30,9 +30,7 @@
           }
         });
 
-        $('.toggle-events').on('click', function(evt) {
-          // topic tool DOM
-          var ttDOM = $('.toggle-events').children()[0];
+        window.$('.toggle-events').on('click', function(evt) {
           var tid = ajaxify.variables.get('topic_id');
           socket.emit('plugins.topicEvents.toggleState',
                       {tid: tid},
@@ -65,10 +63,10 @@
       },
 
       getState: function(tid, cb) {
-        $.get(RELATIVE_PATH + '/api/topic-events/' + tid + '/state',
-              function(stateData) {
-                return cb(stateData.isHidden);
-              });
+        window.$.get(RELATIVE_PATH + '/api/topic-events/' + tid + '/state',
+            function(stateData) {
+              return cb(stateData.isHidden);
+            });
       },
 
       getTopicEvents: function(data) {
@@ -77,9 +75,11 @@
         // get state
         TopicEvents.getState(tid, function(hidden) {
           if (!hidden) {
-            $.get(RELATIVE_PATH + '/api/topic-events/' + tid, function(events) {
-              events.forEach(TopicEvents.prepareTopicEvent);
-            });
+            window.$.get(RELATIVE_PATH + '/api/topic-events/' + tid,
+                function(events) {
+                  events.forEach(TopicEvents.prepareTopicEvent);
+                }
+            );
           }
         });
       },
@@ -87,7 +87,8 @@
       prepareTopicEvent: function(data) {
         var selector = 'li[component="topic/event"][data-timestamp="' +
                        data.tstamp + '"]';
-        if (document.querySelector(selector) != null || data.evtType === void 0) {
+        if (document.querySelector(selector) != null ||
+            data.evtType === void 0) {
           return true;
         }
 
@@ -122,14 +123,12 @@
         // if only one post || event is older than 1st answer
         if (posts.length === 1 || tstamp < posts[1].dataset.timestamp) {
           TopicEvents._headEvents.push(eventElement);
-        }
-        // event is newer than last post
-        else if (tstamp > posts[posts.length - 1].dataset.timestamp) {
+        } else if (tstamp > posts[posts.length - 1].dataset.timestamp) {
           TopicEvents._tailEvents.push(eventElement);
         }
 
         for (var pIdx = 0; pIdx <= posts.length - 1; pIdx++) {
-          if (pIdx != posts.length - 1) {
+          if (pIdx !== posts.length - 1) {
             nextTstamp = posts[pIdx + 1].dataset.timestamp;
           } else {
             nextTstamp = tstamp + 1;
@@ -176,7 +175,7 @@
           translator.translate(tpl, function(content) {
 
             var posts = document.querySelectorAll('li[component=post]');
-            var newEventElement = $(content);
+            var newEventElement = window.$(content);
             newEventElement.find('.timeago').timeago();
 
             TopicEvents.placeTopicEvent(posts, newEventElement[0], data.tstamp);
@@ -192,7 +191,7 @@
       },
 
       setEventTool: function(hidden) {
-        var ttDOM = $('.toggle-events').children();
+        var ttDOM = window.$('.toggle-events').children();
         for (var i = ttDOM.length - 1; i >= 0; i--) {
           var domTarget = ttDOM[i];
           if (hidden) {
@@ -218,27 +217,32 @@
       }
     };
 
-    $(window).on('action:topic.loaded', TopicEvents.init);
-    $(window).on('action:posts.loaded', function(evt, data) {
+    window.$(window).on('action:topic.loaded', TopicEvents.init);
+    window.$(window).on('action:posts.loaded', function(evt, data) {
 
       var topic = document.querySelector('[component="topic"]');
+      var pqs = '';
+      var posts = [
+        document.querySelector('[component="post"][data-index="0"]')
+      ];
+      var iterEvents = [];
+      var moveEvents = [];
 
       // new posts are delivered alone && have a CategoryID
       // assume there are no events after a post, that just
       // arrived, so just push the post to the very end
       if (data.posts.length === 1 && data.posts[0].cid) {
-        var pqs = '[component="post"][data-index="' +
-                  data.posts[data.posts.length - 1].index + '"]';
+        pqs = '[component="post"][data-index="' +
+              data.posts[data.posts.length - 1].index + '"]';
         var post = document.querySelector(pqs);
         topic.removeChild(post);
         topic.insertAdjacentElement('beforeend', post);
         return;
       }
 
-      var posts = [document.querySelector('[component="post"][data-index="0"]')];
       for (var i = 0; i <= data.posts.length - 1; i++) {
-        var pqs = '[component="post"][data-index="' +
-                  data.posts[i].index + '"]';
+        pqs = '[component="post"][data-index="' +
+              data.posts[i].index + '"]';
         posts.push(document.querySelector(pqs));
       }
 
@@ -247,17 +251,17 @@
         if (TopicEvents._headEvents.length === 0) {
           return;
         }
-        var iterEvents = TopicEvents._headEvents.slice(0);
-        var moveEvents = TopicEvents._headEvents;
+        iterEvents = TopicEvents._headEvents.slice(0);
+        moveEvents = TopicEvents._headEvents;
       } else {
         if (TopicEvents._tailEvents.length === 0) {
           return;
         }
-        var iterEvents = TopicEvents._tailEvents.slice(0);
-        var moveEvents = TopicEvents._tailEvents;
+        iterEvents = TopicEvents._tailEvents.slice(0);
+        moveEvents = TopicEvents._tailEvents;
       }
       for (var hIdx = 0; hIdx <= iterEvents.length - 1; hIdx++) {
-        var evt = iterEvents[hIdx];
+        evt = iterEvents[hIdx];
         topic.removeChild(evt);
         moveEvents.shift();
         TopicEvents.placeTopicEvent(posts, evt, evt.dataset.timestamp);

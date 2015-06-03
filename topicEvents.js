@@ -4,26 +4,32 @@ var TopicEvents = {};
 var async = module.parent.require('async');
 var db = module.parent.require('./database');
 var user = module.parent.require('./user');
-var plugins = module.parent.require('./plugins');
+// var plugins = module.parent.require('./plugins');
 var categories = module.parent.require('./categories');
 var translator = module.parent.require('../public/src/modules/translator');
 var PluginSocket = require.main.require('./src/socket.io/plugins');
-var ThreadTools = module.parent.require('./threadTools');
+// var ThreadTools = module.parent.require('./threadTools');
 var user = require.main.require('./src/user');
+var winston = require.main.require('winston');
 
 TopicEvents.addEvent = function(tID, eventName, tstamp, evtData) {
   var key = 'topic:' + tID + ':events';
 
   db.setAdd(key, eventName + ':' + tstamp, function(err) {
+    if (err) {
+      return winston.warn('Failed to add event to database.');
+    }
     db.setObject(key + ':' + eventName + ':' + tstamp, evtData);
   });
 };
-
 
 TopicEvents.getEvents = function(tID, cb) {
   var key = 'topic:' + tID + ':events';
 
   db.getSetMembers(key, function(err, members) {
+    if (err) {
+      return cb(err);
+    }
     var events = [];
     async.eachSeries(members, function(evtName, next) {
       db.getObject(key + ':' + evtName, function(err, data) {
@@ -43,6 +49,9 @@ TopicEvents.topicDeleteRestore = function(data) {
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
+        if (err) {
+          return winston.warn('Failed to get userfields @topicDeleteRestore');
+        }
         var evtType = (data.deleted === 1) ? 'deleted' : 'restored',
             evtData = {
               evtType: evtType,
@@ -54,7 +63,6 @@ TopicEvents.topicDeleteRestore = function(data) {
         TopicEvents.addEvent(data.tid, evtType, tstamp, evtData);
       });
 };
-
 
 TopicEvents.topicPurge = function(tID) {
   var key = 'topic:' + tID + ':events';
@@ -77,6 +85,9 @@ TopicEvents.topicPin = function(data) {
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
+        if (err) {
+          return winston.warn('Failed to get userfields @topicPin');
+        }
         var evtType = data.isPinned ? 'pinned' : 'unpinned',
             evtData = {
               evtType: evtType,
@@ -94,6 +105,9 @@ TopicEvents.topicLock = function(data) {
 
   user.getUserFields(data.uid, ['username', 'userslug', 'picture'],
       function(err, userData) {
+        if (err) {
+          return winston.warn('Failed to get userfields @topicLock');
+        }
         var evtType = data.isLocked ? 'locked' : 'unlocked',
             evtData = {
               evtType: evtType,
@@ -118,6 +132,9 @@ TopicEvents.topicMove = function(data) {
       categories.getCategoriesData([data.fromCid, data.toCid], next);
     }
   }, function(err, cuData) {
+    if (err) {
+      return winston.warn('Failed to get user/categoryfields @topicMove');
+    }
     var evtData = {
       evtType: 'moved',
       tstamp: tstamp,
@@ -154,6 +171,8 @@ TopicEvents.getState = function(req, res, next) {
   }
   var key = 'topic:' + req.params.tid + ':hideevents';
   db.exists(key, function(err, itExists) {
+    if (err) { return; }
+
     if (!itExists) {
       res.json({ isHidden: false });
     } else {
@@ -172,6 +191,8 @@ TopicEvents.init = function(data, cb) {
     }
     var key = 'topic:' + data.tid + ':hideevents';
     db.exists(key, function(err, itExists) {
+      if (err) { return; }
+
       if (itExists) {
         db.delete(key, void 0);
         return cb(null, { isHidden: false });
@@ -189,6 +210,11 @@ function listTopicEvents(req, res, next) {
   var tid = req.params.tid || 0;
 
   TopicEvents.getEvents(tid, function(err, events) {
+    if (err) {
+      winston.warn('Failed to get serfields @topicDeleteRestore');
+      winston.warn(err.stack);
+      return;
+    }
     res.json(events);
   });
 }
