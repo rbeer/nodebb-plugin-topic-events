@@ -2,3 +2,4 @@
 *.sublime-*
 THUMBS.db
 *.xcf
+node_modules/
