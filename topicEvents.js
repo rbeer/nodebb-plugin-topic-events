@@ -4,11 +4,9 @@ var TopicEvents = {};
 var async = module.parent.require('async');
 var db = module.parent.require('./database');
 var user = module.parent.require('./user');
-// var plugins = module.parent.require('./plugins');
 var categories = module.parent.require('./categories');
 var translator = module.parent.require('../public/src/modules/translator');
 var PluginSocket = require.main.require('./src/socket.io/plugins');
-// var ThreadTools = module.parent.require('./threadTools');
 var user = require.main.require('./src/user');
 var winston = require.main.require('winston');
 
@@ -182,7 +180,7 @@ TopicEvents.getState = function(req, res, next) {
 };
 
 TopicEvents.init = function(data, cb) {
-  data.router.get('/api/topic-events/:tid', listTopicEvents);
+  data.router.get('/api/topic-events/:tid', TopicEvents.listTopicEvents);
   data.router.get('/api/topic-events/:tid/state', TopicEvents.getState);
   PluginSocket.topicEvents = {};
   PluginSocket.topicEvents.toggleState = function(socket, data, cb) {
@@ -206,7 +204,7 @@ TopicEvents.init = function(data, cb) {
   cb();
 };
 
-function listTopicEvents(req, res, next) {
+TopicEvents.listTopicEvents = function(req, res, next) {
   var tid = req.params.tid || 0;
 
   TopicEvents.getEvents(tid, function(err, events) {
@@ -217,6 +215,6 @@ function listTopicEvents(req, res, next) {
     }
     res.json(events);
   });
-}
+};
 
 module.exports = TopicEvents;
