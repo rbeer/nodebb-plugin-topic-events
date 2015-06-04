@@ -1,29 +1,11 @@
---- ../../src/threadTools.orig	2015-05-29 21:04:29.113666800 +0200
-+++ ../../src/threadTools.js	2015-05-29 21:04:40.965667122 +0200
-@@ -38,12 +38,6 @@
- 				}
+--- threadTools.orig	2015-06-04 14:44:19.041551541 +0200
++++ threadTools.js	2015-05-31 10:41:27.222167492 +0200
+@@ -39,7 +39,7 @@
  				topicData.deleted = isDelete ? 1 : 0;
  
--				if (isDelete) {
+ 				if (isDelete) {
 -					plugins.fireHook('action:topic.delete', tid);
--				} else {
--					plugins.fireHook('action:topic.restore', topicData);
--				}
--
- 				var data = {
- 					tid: tid,
- 					cid: topicData.cid,
-@@ -51,6 +45,13 @@
- 					uid: uid
- 				};
- 
-+				if (isDelete) {
-+					plugins.fireHook('action:topic.delete', data);
-+				} else {
-+					plugins.fireHook('action:topic.restore', topicData);
-+				}
-+
-+
- 				callback(null, data);
- 			});
- 		});
++					plugins.fireHook('action:topic.delete', topicData);
+ 				} else {
+ 					plugins.fireHook('action:topic.restore', topicData);
+ 				}
