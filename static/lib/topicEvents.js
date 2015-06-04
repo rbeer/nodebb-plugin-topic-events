@@ -9,6 +9,7 @@
       _firstAnswerId: 0,
       _headEvents: [],
       _tailEvents: [],
+      _isHidden: null,
 
       init: function() {
 
@@ -63,10 +64,14 @@
       },
 
       getState: function(tid, cb) {
-        window.$.get(RELATIVE_PATH + '/api/topic-events/' + tid + '/state',
-            function(stateData) {
-              return cb(stateData.isHidden);
-            });
+        if (TopicEvents._isHidden !== null) {
+          return cb(TopicEvents._isHidden);
+        } else {
+          window.$.get(RELATIVE_PATH + '/api/topic-events/' + tid + '/state',
+              function(stateData) {
+                return cb(stateData.isHidden);
+              });
+        }
       },
 
       getTopicEvents: function(data) {
@@ -184,9 +189,10 @@
       },
 
       clearTopicEvents: function() {
-        var eventBlocks = document.getElementsByClassName('topic-events-block');
+        var eventBlocks = document
+                            .querySelectorAll('[component="topic/event"]');
         for (var i = eventBlocks.length - 1; i >= 0; i--) {
-          eventBlocks[i].parentNode.removeChild(eventBlocks[i]);
+          eventBlocks[i].parentElement.removeChild(eventBlocks[i]);
         }
       },
 
@@ -219,54 +225,57 @@
 
     window.$(window).on('action:topic.loaded', TopicEvents.init);
     window.$(window).on('action:posts.loaded', function(evt, data) {
+      TopicEvents.getState(data.posts[0].tid, function(isHidden) {
+        if (isHidden) { return; }
 
-      var topic = document.querySelector('[component="topic"]');
-      var pqs = '';
-      var posts = [
-        document.querySelector('[component="post"][data-index="0"]')
-      ];
-      var iterEvents = [];
-      var moveEvents = [];
+        var topic = document.querySelector('[component="topic"]');
+        var pqs = '';
+        var posts = [
+          document.querySelector('[component="post"][data-index="0"]')
+        ];
+        var iterEvents = [];
+        var moveEvents = [];
 
-      // new posts are delivered alone && have a CategoryID
-      // assume there are no events after a post, that just
-      // arrived, so just push the post to the very end
-      if (data.posts.length === 1 && data.posts[0].cid) {
-        pqs = '[component="post"][data-index="' +
-              data.posts[data.posts.length - 1].index + '"]';
-        var post = document.querySelector(pqs);
-        topic.removeChild(post);
-        topic.insertAdjacentElement('beforeend', post);
+        // new posts are delivered alone && have a CategoryID
+        // assume there are no events after a post, that just
+        // arrived, so just push the post to the very end
+        if (data.posts.length === 1 && data.posts[0].cid) {
+          pqs = '[component="post"][data-index="' +
+                data.posts[data.posts.length - 1].index + '"]';
+          var post = document.querySelector(pqs);
+          topic.removeChild(post);
+          topic.insertAdjacentElement('beforeend', post);
+          return;
+        }
+
+        for (var i = 0; i <= data.posts.length - 1; i++) {
+          pqs = '[component="post"][data-index="' +
+                data.posts[i].index + '"]';
+          posts.push(document.querySelector(pqs));
+        }
+
+        var newLastId = data.posts[data.posts.length - 1].index;
+        if (newLastId < TopicEvents._firstAnswerId) {
+          if (TopicEvents._headEvents.length === 0) {
+            return;
+          }
+          iterEvents = TopicEvents._headEvents.slice(0);
+          moveEvents = TopicEvents._headEvents;
+        } else {
+          if (TopicEvents._tailEvents.length === 0) {
+            return;
+          }
+          iterEvents = TopicEvents._tailEvents.slice(0);
+          moveEvents = TopicEvents._tailEvents;
+        }
+        for (var hIdx = 0; hIdx <= iterEvents.length - 1; hIdx++) {
+          evt = iterEvents[hIdx];
+          topic.removeChild(evt);
+          moveEvents.shift();
+          TopicEvents.placeTopicEvent(posts, evt, evt.dataset.timestamp);
+        }
         return;
-      }
-
-      for (var i = 0; i <= data.posts.length - 1; i++) {
-        pqs = '[component="post"][data-index="' +
-              data.posts[i].index + '"]';
-        posts.push(document.querySelector(pqs));
-      }
-
-      var newLastId = data.posts[data.posts.length - 1].index;
-      if (newLastId < TopicEvents._firstAnswerId) {
-        if (TopicEvents._headEvents.length === 0) {
-          return;
-        }
-        iterEvents = TopicEvents._headEvents.slice(0);
-        moveEvents = TopicEvents._headEvents;
-      } else {
-        if (TopicEvents._tailEvents.length === 0) {
-          return;
-        }
-        iterEvents = TopicEvents._tailEvents.slice(0);
-        moveEvents = TopicEvents._tailEvents;
-      }
-      for (var hIdx = 0; hIdx <= iterEvents.length - 1; hIdx++) {
-        evt = iterEvents[hIdx];
-        topic.removeChild(evt);
-        moveEvents.shift();
-        TopicEvents.placeTopicEvent(posts, evt, evt.dataset.timestamp);
-      }
-      return;
+      });
     });
 
     socket.on('event:topic_pinned', TopicEvents.getTopicEvents);
