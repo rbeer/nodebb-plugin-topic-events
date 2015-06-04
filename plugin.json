@@ -19,7 +19,7 @@
     "static": "./static"
   },
   "less": [
-    "static/style.less"
+    "static/topicEvents.less"
   ],
   "scripts": [
     "static/lib/topicEvents.js"
