@@ -1,47 +1,50 @@
 .posts {
 
-	.topic-events {
+  li[component="topic/event"] + li[component="post"] {
+    padding-top: 20px;
+  }
 
-		height: 40px;
-		margin-left: 15px;
-		margin-bottom: 20px;
-		padding-top: 10px;
+  li[component="topic/event"] {
 
-		img {
-			border-radius: 100%;
-			width: 19px;
-			height: 19px;
-			margin-left: -11px;
-		}
-		> span {
-			font-size: 85%;
-		}
-		&.locked {
-			border-left: 4px solid @brand-danger;
-		}
-		&.unlocked {
-			border-left: 4px solid @brand-success;
-		}
-		&.pinned {
-			border-left: 4px solid @brand-success;
-		}
-		&.unpinned {
-			border-left: 4px solid @brand-warning;
-		}
-		&.moved {
-			border-left: 4px solid @brand-primary;
-		}
-		&.deleted {
-			border-left: 4px solid @brand-danger;
-		}
-		&.restored {
-			border-left: 4px solid @brand-success;
-		}
-	}
+    height: 40px;
+    margin-left: 15px;
+    padding-top: 10px;
+
+    img {
+      border-radius: 100%;
+      width: 19px;
+      height: 19px;
+      margin-left: -11px;
+    }
+    > span {
+      font-size: 85%;
+    }
+    &.locked {
+      border-left: 4px solid @brand-danger;
+    }
+    &.unlocked {
+      border-left: 4px solid @brand-success;
+    }
+    &.pinned {
+      border-left: 4px solid @brand-success;
+    }
+    &.unpinned {
+      border-left: 4px solid @brand-warning;
+    }
+    &.moved {
+      border-left: 4px solid @brand-primary;
+    }
+    &.deleted {
+      border-left: 4px solid @brand-danger;
+    }
+    &.restored {
+      border-left: 4px solid @brand-success;
+    }
+  }
 }
 .toggle-events {
-	> i.te-show {
-		color: rgb(75, 216, 101);
-	}
-	> i.te-hide {	}
+  > i.te-show {
+    color: rgb(75, 216, 101);
+  }
+  > i.te-hide { }
 }
