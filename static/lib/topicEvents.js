@@ -20,9 +20,13 @@
         }
 
         var tid = ajaxify.variables.get('topic_id');
-        var firstId = document.querySelectorAll('[component="post"]')
-                      .item(1).dataset.index;
-        TopicEvents._firstAnswerId = Number.parseInt(firstId);
+        var firstAnswerPost = document.querySelectorAll('[component="post"]');
+        try {
+          TopicEvents._firstAnswerId = Number.parseInt(firstAnswerPost.item(1)
+                                                       .dataset.index);
+        } catch (err) {
+          TopicEvents._firstAnswerId = -1;
+        }
 
         TopicEvents.getState(tid, function(hidden) {
           TopicEvents.setEventTool(hidden);
