@@ -3,7 +3,7 @@
   "name": "Topic Events plugin for NodeBB",
   "description": "Catches topic events (i.e. un-/pinned, un-/locked, delete/restore, purge and moved). Adds a small notification inline within the thread, with the moderator's picture, username, brief description of the event, and timestamp. v0.6.1 compatible, German translation.",
   "url": "https://github.com/Linux-statt-Windows/nodebb-plugin-topic-events",
-  "library": "./topicEvents.js",
+  "library": "./topicevents_be.js",
   "hooks": [
     { "hook": "action:topic.pin", "method": "topicPin" },
     { "hook": "action:topic.lock", "method": "topicLock" },
@@ -19,10 +19,10 @@
     "static": "./static"
   },
   "less": [
-    "static/topicEvents.less"
+    "static/topicevents.less"
   ],
   "scripts": [
-    "static/lib/topicEvents.js"
+    "static/lib/topicevents_fe.js"
   ],
   "languages": "languages",
   "templates": "templates"

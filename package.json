@@ -2,7 +2,7 @@
   "name": "nodebb-plugin-topic-events",
   "version": "0.2.0",
   "description": "Topic Events plugin for NodeBB",
-  "main": "topicEvents.js",
+  "main": "topicevents_be.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Linux-statt-Windows/nodebb-plugin-topic-events"
