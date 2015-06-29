@@ -6,7 +6,7 @@ PlugIn for NodeBB, showing inline topic events.
 ## Installation
 1. Go to your nodeBB installation:
 
-    `cd /path/to/nodebb/`
+    `cd /var/nodebb/`
 
 2. Clone the plugin into ./node_modules/ folder:
 
@@ -15,17 +15,9 @@ git clone https://github.com/Linux-statt-Windows/nodebb-plugin-topic-events.git 
 ./node_modules/nodebb-plugin-topic-events
 ```
 
-3. Install module:
+4. Activate the plugin in the ACP.
 
-    `npm install`
-
-4. Apply the patch:
-   1. `cd /nodeBB/node_modules/nodebb-plugin-topic-events`
-   2. `patch < threadTools.patch`
-
-5. Activate the plugin in the ACP.
-
-6. Go nuts! :D
+5. Go nuts! :D
 
 ## Features
 ###Captured Events
@@ -44,7 +36,7 @@ git clone https://github.com/Linux-statt-Windows/nodebb-plugin-topic-events.git 
 
     ![](assets/deleted.png?raw=true)
     ![](assets/restored.png?raw=true)
-    
+
 * purge
 
     Deletes all recorded events.
