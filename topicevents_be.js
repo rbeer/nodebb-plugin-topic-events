@@ -162,7 +162,7 @@ TopicEvents.addTopicTool = function(tTools, cb) {
   cb(null, tTools);
 };
 
-TopicEvents.getState = function(req, res, next) {
+TopicEvents.getState = function(req, res) {
   if (!req.params.tid) {
     res.json('no topic_id');
     return;
@@ -204,7 +204,7 @@ TopicEvents.init = function(app, cb) {
   cb(null, app);
 };
 
-TopicEvents.listTopicEvents = function(req, res, next) {
+TopicEvents.listTopicEvents = function(req, res) {
   var tid = req.params.tid || 0;
 
   TopicEvents.getEvents(tid, function(err, events) {
