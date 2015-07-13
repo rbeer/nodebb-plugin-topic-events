@@ -179,11 +179,11 @@ TopicEvents.getState = function(req, res, next) {
   });
 };
 
-TopicEvents.init = function(data, cb) {
-  data.router.get('/api/topic-events/:tid', TopicEvents.listTopicEvents);
-  data.router.get('/api/topic-events/:tid/state', TopicEvents.getState);
-  PluginSocket.topicEvents = {};
-  PluginSocket.topicEvents.toggleState = function(socket, data, cb) {
+TopicEvents.init = function(app, cb) {
+  app.router.get('/api/topic-events/:tid', TopicEvents.listTopicEvents);
+  app.router.get('/api/topic-events/:tid/state', TopicEvents.getState);
+  PluginSocket.TopicEvents = {};
+  PluginSocket.TopicEvents.toggleState = function(socket, data, cb) {
     if (!data.tid) {
       return cb('No topic_id');
     }
@@ -201,7 +201,7 @@ TopicEvents.init = function(data, cb) {
     });
   };
 
-  cb();
+  cb(null, app);
 };
 
 TopicEvents.listTopicEvents = function(req, res, next) {

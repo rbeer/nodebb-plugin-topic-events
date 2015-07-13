@@ -37,7 +37,7 @@
 
         window.$('.toggle-events').on('click', function(evt) {
           var tid = ajaxify.variables.get('topic_id');
-          socket.emit('plugins.topicEvents.toggleState',
+          socket.emit('plugins.TopicEvents.toggleState',
                       {tid: tid},
                       function(err, backData) {
                         if (err) {
